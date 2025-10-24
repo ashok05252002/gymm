@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, ChevronDown, Check, LoaderCircle, Dumbbell, Smartphone } from 'lucide-react';
+import { Mail, Lock, User, ChevronDown, Check, LoaderCircle, Dumbbell, Smartphone, BookOpen } from 'lucide-react';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
+import UIGuideModal from '../components/UIGuideModal';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
@@ -110,7 +112,7 @@ const LoginPage = () => {
                 </label>
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => setIsForgotModalOpen(true)}
                   className="text-sm font-medium text-brand-red hover:underline focus:outline-none"
                 >
                   Forgot Password?
@@ -154,6 +156,17 @@ const LoginPage = () => {
                 </div>
             </div>
 
+            <div className="mt-8 text-center">
+                 <button
+                  type="button"
+                  onClick={() => setIsGuideOpen(true)}
+                  className="text-sm font-medium text-gray-500 hover:text-brand-red hover:underline focus:outline-none flex items-center gap-2 mx-auto"
+                >
+                  <BookOpen size={16} />
+                  View UI Design Guide
+                </button>
+            </div>
+
           </div>
         </div>
 
@@ -164,7 +177,8 @@ const LoginPage = () => {
           </div>
         </div>
       </motion.div>
-      <ForgotPasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ForgotPasswordModal isOpen={isForgotModalOpen} onClose={() => setIsForgotModalOpen(false)} />
+      <UIGuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
     </div>
   );
 };
