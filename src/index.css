@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-100 text-gray-800 font-sans antialiased;
+  }
+}
+
+/* FullCalendar Customizations */
+@layer components {
+    .fc {
+        @apply border-none h-full; /* Remove default borders and ensure it fills height */
+    }
+
+    /* Toolbar - We use a custom one, but styles are good to have */
+    .fc .fc-toolbar.fc-header-toolbar {
+        @apply mb-4;
+    }
+    .fc .fc-toolbar-title {
+        @apply text-2xl font-bold font-display text-gray-800;
+    }
+
+    /* View Container */
+    .fc .fc-view-harness {
+        @apply rounded-b-lg flex-1; /* Important for height */
+    }
+
+    /* Header Cells (Mon, Tue, etc.) */
+    .fc .fc-col-header-cell {
+        @apply bg-gray-50 py-3 text-sm font-medium text-gray-600 border-b border-gray-200;
+    }
+
+    /* Day Grid */
+    .fc .fc-daygrid-day {
+        @apply border-gray-200;
+    }
+    .fc .fc-daygrid-day.fc-day-today {
+        @apply bg-red-50;
+    }
+    .fc .fc-daygrid-day-number {
+        @apply text-sm p-2 text-gray-500;
+    }
+    .fc .fc-day-today .fc-daygrid-day-number {
+        @apply font-bold text-brand-red;
+    }
+
+    /* Events */
+    .fc .fc-daygrid-event {
+        @apply bg-white border border-gray-200 text-gray-800 shadow-none hover:shadow-md transition-shadow duration-200 cursor-pointer;
+    }
+    .fc .fc-event-main {
+        @apply p-0; /* Let internal component handle padding */
+    }
+
+    /* More Events Popover */
+    .fc .fc-popover {
+        @apply bg-white rounded-lg shadow-xl border border-gray-200 z-50;
+    }
+    .fc .fc-popover-header {
+        @apply bg-gray-100 p-2 font-semibold text-gray-700;
+    }
+    .fc .fc-popover-body {
+        @apply p-2;
+    }
+    .fc-daygrid-more-link {
+        @apply text-xs font-medium text-brand-red hover:underline;
+    }
+
+    /* TimeGrid styles */
+    .fc .fc-timegrid-slot-label {
+        @apply text-xs text-gray-500 border-gray-200;
+    }
+    .fc .fc-timegrid-slot {
+        @apply border-gray-200;
+    }
+    .fc .fc-timegrid-event {
+        @apply rounded-md shadow-md p-2;
+    }
+    .fc .fc-timegrid-event .fc-event-main {
+        @apply text-white;
+    }
+    .fc .fc-timegrid-event .fc-event-time, .fc .fc-timegrid-event .fc-event-title {
+        @apply font-semibold;
+    }
+}
