@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Calendar, Users, User, Plus } from 'lucide-react';
+import { Home, Calendar, Users, User } from 'lucide-react';
 import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
-import TrainerBookSessionModal from '../popups/TrainerBookSessionModal';
-import { getTrainerClients, getTrainerData } from '../../../data/mockData';
 
 const navItems = [
     { path: 'home', icon: Home, label: 'Home' },
@@ -14,16 +11,6 @@ const navItems = [
 ];
 
 const TrainerBottomNavBar = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const { trainer } = getTrainerData();
-    const clients = getTrainerClients(trainer.id);
-
-    const handleSaveBooking = (bookingData) => {
-        console.log("New Session Booked by Trainer:", bookingData);
-        toast.success("Session booked successfully for client.");
-        setIsModalOpen(false);
-    };
-
     const NavItem = ({ item }) => (
         <NavLink
             to={`/mobile/trainer/${item.path}`}
@@ -48,31 +35,11 @@ const TrainerBottomNavBar = () => {
     );
 
     return (
-        <>
-            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md h-20 z-50">
-                <div className="relative w-full h-full bg-brand-dark rounded-3xl shadow-2xl flex justify-around items-center px-2">
-                    {navItems.slice(0, 2).map(item => <NavItem key={item.path} item={item} />)}
-                    <div className="w-16 h-16" /> {/* Spacer for the FAB */}
-                    {navItems.slice(2, 4).map(item => <NavItem key={item.path} item={item} />)}
-                </div>
-                
-                <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsModalOpen(true)}
-                    className="absolute left-1/2 -translate-x-1/2 -top-5 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg text-brand-red"
-                    aria-label="Add New Session"
-                >
-                    <Plus size={32} />
-                </motion.button>
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md h-20 z-50">
+            <div className="w-full h-full bg-brand-dark rounded-3xl shadow-2xl flex justify-around items-center px-2">
+                {navItems.map(item => <NavItem key={item.path} item={item} />)}
             </div>
-            <TrainerBookSessionModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleSaveBooking}
-                clients={clients}
-                trainer={trainer}
-            />
-        </>
+        </div>
     );
 };
 
