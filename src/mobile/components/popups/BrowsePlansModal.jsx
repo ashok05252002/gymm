@@ -2,7 +2,7 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, CheckCircle } from 'lucide-react';
 
-const BrowsePlansModal = ({ isOpen, onClose, plans, onSelectPlan }) => {
+const BrowsePlansModal = ({ isOpen, onClose, plans }) => {
     return (
         <AnimatePresence>
             {isOpen && (
@@ -18,12 +18,12 @@ const BrowsePlansModal = ({ isOpen, onClose, plans, onSelectPlan }) => {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="p-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
-                            <h2 className="text-lg font-bold text-gray-800">Browse & Renew Plans</h2>
+                            <h2 className="text-lg font-bold text-gray-800">Available Plans</h2>
                             <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-200"><X size={20} /></button>
                         </div>
                         <div className="p-4 space-y-4 overflow-y-auto flex-1">
                             {plans.filter(p => p.status === 'Active').map(plan => (
-                                <div key={plan.id} className="bg-white p-4 rounded-2xl shadow-sm border-2 border-transparent hover:border-brand-red transition-colors">
+                                <div key={plan.id} className="bg-white p-4 rounded-2xl shadow-sm border-2 border-transparent">
                                     <div className="flex justify-between items-start">
                                         <h3 className="font-bold text-lg text-gray-800">{plan.name}</h3>
                                         <p className="font-bold text-lg text-brand-red">{plan.price.toFixed(3)} OMR</p>
@@ -37,12 +37,6 @@ const BrowsePlansModal = ({ isOpen, onClose, plans, onSelectPlan }) => {
                                             </li>
                                         ))}
                                     </ul>
-                                    <button 
-                                        onClick={() => onSelectPlan(plan)}
-                                        className="w-full mt-4 bg-red-50 text-brand-red font-bold py-2.5 rounded-xl"
-                                    >
-                                        Choose Plan
-                                    </button>
                                 </div>
                             ))}
                         </div>

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { getTrainerData, getRecentClientActivity, getUsers } from '../../../data/mockData';
+import { getTrainerData, getRecentClientActivity, getUsers, getTrainerClients } from '../../../data/mockData';
 import HomeKpiCard from '../../components/cards/HomeKpiCard';
 import TodaySessionCard from '../../components/cards/TodaySessionCard';
-import { Dumbbell, Users, BarChart, CheckCircle, LogIn } from 'lucide-react';
+import { Dumbbell, Users, CheckCircle, LogIn } from 'lucide-react';
 import SessionDetailsModal from '../../components/popups/SessionDetailsModal';
 import toast from 'react-hot-toast';
+import TrainerBookSessionModal from '../../components/popups/TrainerBookSessionModal';
 
 const activityIconMap = {
     'check-in': <LogIn size={18} className="text-blue-500" />,
@@ -16,14 +17,15 @@ const TrainerHomeScreen = () => {
     const { trainer, kpis } = getTrainerData();
     const [todaysSessions, setTodaysSessions] = useState(getTrainerData().todaysSessions);
     const [activityLog, setActivityLog] = useState(getRecentClientActivity(trainer.id));
-    const users = getUsers();
+    const clients = getTrainerClients(trainer.id);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [isBookModalOpen, setIsBookModalOpen] = useState(false);
     const [selectedSession, setSelectedSession] = useState(null);
 
     const handleSessionClick = (session) => {
         setSelectedSession(session);
-        setIsModalOpen(true);
+        setIsDetailsModalOpen(true);
     };
 
     const handleUpdateSessionStatus = (sessionId, status) => {
@@ -34,6 +36,13 @@ const TrainerHomeScreen = () => {
         );
         toast.success(`Session marked as ${status}.`);
     };
+    
+    const handleSaveBooking = (bookingData) => {
+        console.log("New Trainer Booking:", bookingData);
+        toast.success("Session booked successfully for client!");
+        setIsBookModalOpen(false);
+    };
+
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -56,10 +65,9 @@ const TrainerHomeScreen = () => {
                 animate="visible"
                 className="space-y-6"
             >
-                <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
-                    <HomeKpiCard icon={Dumbbell} label="Sessions" value={kpis.sessionsToday} color="red" />
+                <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
+                    <HomeKpiCard icon={Dumbbell} label="Sessions Today" value={kpis.sessionsToday} color="red" />
                     <HomeKpiCard icon={Users} label="Attendance" value={kpis.attendance} color="green" />
-                    <HomeKpiCard icon={BarChart} label="Income" value={`${kpis.monthlyIncome} OMR`} color="blue" />
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
@@ -103,11 +111,18 @@ const TrainerHomeScreen = () => {
                 </motion.div>
             </motion.div>
             <SessionDetailsModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
                 session={selectedSession}
-                member={users.find(u => u.id === selectedSession?.memberId)}
+                member={clients.find(u => u.id === selectedSession?.memberId)}
                 onUpdateStatus={handleUpdateSessionStatus}
+            />
+            <TrainerBookSessionModal
+                isOpen={isBookModalOpen}
+                onClose={() => setIsBookModalOpen(false)}
+                onSave={handleSaveBooking}
+                clients={clients}
+                trainer={trainer}
             />
         </>
     );

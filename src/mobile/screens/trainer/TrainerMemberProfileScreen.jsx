@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Dumbbell, BarChart, Activity } from 'lucide-react';
-import { getUserById, getSessions, getLogsByUserId } from '../../../data/mockData';
+import { ArrowLeft } from 'lucide-react';
+import { getUserById, getSessions } from '../../../data/mockData';
 import MobileTabs from '../../components/shared/MobileTabs';
 import ProfileStatCard from '../../components/cards/ProfileStatCard';
 
@@ -16,14 +16,13 @@ const TrainerMemberProfileScreen = () => {
     }
 
     const clientSessions = getSessions().filter(s => s.memberId === memberId).sort((a,b) => b.dateTime - a.dateTime);
-    const clientLogs = getLogsByUserId(memberId);
 
     const OverviewTab = () => (
         <div className="space-y-4">
             <div className="grid grid-cols-3 gap-3">
                 <ProfileStatCard label="Plan" value={client.planHistory[0]?.planName || 'N/A'} />
                 <ProfileStatCard label="Status" value={client.status} />
-                <ProfileStatCard label="Sessions" value={clientSessions.length} />
+                <ProfileStatCard label="Total Sessions" value={clientSessions.length} />
             </div>
             <div className="bg-white p-4 rounded-2xl">
                 <h4 className="font-bold mb-2">Fitness Goals</h4>
@@ -50,26 +49,9 @@ const TrainerMemberProfileScreen = () => {
         </div>
     );
 
-    const LogsTab = () => (
-        <div className="space-y-3">
-            {clientLogs.map(log => (
-                <div key={log.id} className="bg-white p-4 rounded-2xl flex justify-between items-center">
-                    <div>
-                        <p className="font-semibold">{new Date(log.timestamp).toLocaleString()}</p>
-                        <p className="text-sm text-gray-500 font-mono">{log.deviceId}</p>
-                    </div>
-                     <span className={`px-3 py-1 text-xs font-medium rounded-full ${log.status === 'Granted' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {log.status}
-                    </span>
-                </div>
-            ))}
-        </div>
-    );
-
     const tabs = [
         { label: 'Overview', content: <OverviewTab /> },
         { label: 'Sessions', content: <SessionsTab /> },
-        { label: 'Logs', content: <LogsTab /> },
     ];
 
     return (

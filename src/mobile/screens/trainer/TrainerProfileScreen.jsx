@@ -10,21 +10,16 @@ const TrainerProfileScreen = () => {
     const navigate = useNavigate();
     const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
-    const handleLogout = () => {
-        navigate('/login');
-    };
-
     const stats = [
         { label: 'Total Clients', value: 15 },
-        { label: 'Feedback Score', value: '4.8/5' },
-        { label: 'Balance', value: '120.500 OMR' },
+        { label: 'Sessions This Month', value: 42 },
     ];
 
     const actions = [
         { label: 'Edit Info', icon: Edit, action: () => {} },
         { label: 'Show Access QR', icon: QrCode, action: () => setIsQrModalOpen(true) },
         { label: 'Settings', icon: Settings, action: () => {} },
-        { label: 'Logout', icon: LogOut, action: handleLogout, color: 'text-red-500' },
+        { label: 'Logout', icon: LogOut, action: () => navigate('/login'), color: 'text-red-500' },
     ];
 
     return (
@@ -39,7 +34,7 @@ const TrainerProfileScreen = () => {
                     <p className="text-gray-500 bg-gray-200 px-3 py-1 rounded-full text-xs mt-2 font-medium">Lead Trainer</p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                     {stats.map(stat => (
                         <div key={stat.label} className="bg-white p-4 rounded-3xl text-center">
                             <p className="font-bold text-lg text-brand-red">{stat.value}</p>

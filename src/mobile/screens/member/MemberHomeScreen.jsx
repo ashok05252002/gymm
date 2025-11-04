@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { getMemberData, getPlans } from '../../../data/mockData';
-import { MessageSquare, Zap } from 'lucide-react';
+import { Info, Zap } from 'lucide-react';
 import BrowsePlansModal from '../../components/popups/BrowsePlansModal';
 import toast from 'react-hot-toast';
 
@@ -12,8 +12,8 @@ const MemberHomeScreen = () => {
 
     const handleSelectPlan = (plan) => {
         console.log("Selected Plan:", plan);
-        toast.success(`Proceeding to payment for ${plan.name} plan.`);
-        setIsPlansModalOpen(false);
+        toast.success(`Viewing details for ${plan.name} plan.`);
+        // In a real app, this might navigate to a detailed plan page or payment screen
     };
 
     const containerVariants = {
@@ -89,7 +89,7 @@ const MemberHomeScreen = () => {
                         </div>
                     </div>
                     <button className="p-3 bg-red-50 rounded-full text-brand-red">
-                        <MessageSquare size={22} />
+                        <Info size={22} />
                     </button>
                 </motion.div>
             </motion.div>

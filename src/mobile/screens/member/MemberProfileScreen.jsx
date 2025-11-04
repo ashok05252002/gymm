@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Edit, LogOut, QrCode } from 'lucide-react';
+import { Edit, LogOut, QrCode, Phone } from 'lucide-react';
 import { getMemberData } from '../../../data/mockData';
 import { useNavigate } from 'react-router-dom';
 import MobileTabs from '../../components/shared/MobileTabs';
@@ -60,6 +60,14 @@ const MemberProfileScreen = () => {
                 </div>
 
                 <MobileTabs tabs={tabs} />
+
+                <div className="bg-white p-4 rounded-2xl space-y-1">
+                    <h4 className="font-bold text-gray-800 px-2 pb-1">Gym Contact</h4>
+                    <div className="flex justify-between items-center text-sm p-2">
+                        <span className="text-gray-500 flex items-center gap-2"><Phone size={16}/> Main Office</span>
+                        <span className="font-semibold">+968 9123 4567</span>
+                    </div>
+                </div>
 
                 <div className="pt-4">
                     <button onClick={() => navigate('/login')} className="w-full flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 font-bold rounded-2xl">

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { getMemberBookings, getUsers } from '../../../data/mockData';
+import { getMemberBookings } from '../../../data/mockData';
 import toast from 'react-hot-toast';
-import MemberBookSessionModal from '../../components/popups/MemberBookSessionModal';
+import CancelSessionConfirmationModal from '../../components/popups/CancelSessionConfirmationModal';
 
 const sessionStatusColors = {
     Confirmed: 'border-green-500',
@@ -12,29 +12,19 @@ const sessionStatusColors = {
 
 const MemberBookingsScreen = () => {
     const [bookings, setBookings] = useState(getMemberBookings());
-    const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
-    const [sessionToReschedule, setSessionToReschedule] = useState(null);
-    const trainers = getUsers().filter(u => u.role === 'Trainer');
+    const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
+    const [bookingToCancel, setBookingToCancel] = useState(null);
 
-    const handleCancel = (bookingId) => {
-        setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: 'Cancelled' } : b));
+    const handleCancelClick = (booking) => {
+        setBookingToCancel(booking);
+        setIsCancelConfirmOpen(true);
+    };
+
+    const confirmCancellation = () => {
+        setBookings(prev => prev.map(b => b.id === bookingToCancel.id ? { ...b, status: 'Cancelled' } : b));
         toast.error("Session cancelled.");
-    };
-
-    const handleReschedule = (booking) => {
-        setSessionToReschedule(booking);
-        setIsRescheduleModalOpen(true);
-    };
-    
-    const handleSaveReschedule = (rescheduleData) => {
-        setBookings(prev => prev.map(b => 
-            b.id === sessionToReschedule.id 
-            ? { ...b, ...rescheduleData, dateTime: new Date(`${rescheduleData.date}T${rescheduleData.time}`) } 
-            : b
-        ));
-        toast.success("Session rescheduled successfully!");
-        setIsRescheduleModalOpen(false);
-        setSessionToReschedule(null);
+        setIsCancelConfirmOpen(false);
+        setBookingToCancel(null);
     };
 
     return (
@@ -53,10 +43,7 @@ const MemberBookingsScreen = () => {
                             </div>
                             {booking.status === 'Confirmed' && (
                                 <div className="text-right mt-2 flex gap-4 justify-end">
-                                    <button onClick={() => handleReschedule(booking)} className="text-xs font-medium text-blue-500 hover:underline">
-                                        Reschedule
-                                    </button>
-                                    <button onClick={() => handleCancel(booking.id)} className="text-xs font-medium text-red-500 hover:underline">
+                                    <button onClick={() => handleCancelClick(booking)} className="text-xs font-medium text-red-500 hover:underline">
                                         Cancel
                                     </button>
                                 </div>
@@ -65,12 +52,11 @@ const MemberBookingsScreen = () => {
                     ))}
                 </div>
             </motion.div>
-            <MemberBookSessionModal
-                isOpen={isRescheduleModalOpen}
-                onClose={() => setIsRescheduleModalOpen(false)}
-                onSave={handleSaveReschedule}
-                trainers={trainers}
-                session={sessionToReschedule}
+            <CancelSessionConfirmationModal
+                isOpen={isCancelConfirmOpen}
+                onClose={() => setIsCancelConfirmOpen(false)}
+                onConfirm={confirmCancellation}
+                booking={bookingToCancel}
             />
         </>
     );

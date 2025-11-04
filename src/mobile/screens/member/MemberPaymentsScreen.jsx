@@ -19,13 +19,6 @@ const MemberPaymentsScreen = () => {
     const allPlans = getPlans();
     const [isPlansModalOpen, setIsPlansModalOpen] = useState(false);
 
-    const handleSelectPlan = (plan) => {
-        console.log("Selected Plan:", plan);
-        toast.success(`Proceeding to payment for ${plan.name} plan.`);
-        setIsPlansModalOpen(false);
-        // Here you would navigate to a payment gateway or a confirmation screen
-    };
-
     return (
         <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -38,7 +31,7 @@ const MemberPaymentsScreen = () => {
                         <p className="text-sm text-gray-500">Expires: {new Date(activePlan.endDate).toLocaleDateString()}</p>
                     </div>
                     <button onClick={() => setIsPlansModalOpen(true)} className="w-full mt-4 bg-brand-red text-white font-bold py-3 rounded-2xl">
-                        Renew / Browse Plans
+                        View All Plans
                     </button>
                 </div>
 
@@ -64,7 +57,6 @@ const MemberPaymentsScreen = () => {
                 isOpen={isPlansModalOpen}
                 onClose={() => setIsPlansModalOpen(false)}
                 plans={allPlans}
-                onSelectPlan={handleSelectPlan}
             />
         </>
     );
