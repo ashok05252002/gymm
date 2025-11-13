@@ -3,13 +3,21 @@ import { motion } from 'framer-motion';
 import { Mail, Phone, Calendar, Shield, Edit } from 'lucide-react';
 import StatusBadge from '../../shared/StatusBadge';
 
-const ProfileHeader = ({ user }) => {
+const ProfileHeader = ({ user, onEdit }) => {
     return (
         <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="bg-white p-6 rounded-xl shadow-sm border border-gray-200"
+            className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 relative"
         >
+            {onEdit && (
+                 <button 
+                    onClick={onEdit}
+                    className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-brand-red text-white rounded-lg hover:bg-red-600 text-sm font-medium"
+                >
+                    <Edit size={16} /> Edit Profile & Plans
+                </button>
+            )}
             <div className="flex flex-col sm:flex-row gap-6">
                 <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full" />
                 <div className="flex-1">
@@ -20,9 +28,6 @@ const ProfileHeader = ({ user }) => {
                                 <StatusBadge status={user.status} />
                             </div>
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2 mt-4 sm:mt-0 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium">
-                            <Edit size={16} /> Edit Profile
-                        </button>
                     </div>
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-gray-600">
                         <div className="flex items-center gap-2">

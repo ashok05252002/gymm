@@ -20,12 +20,6 @@ const MemberProfileScreen = () => {
         </div>
     );
     
-    const GoalsTab = () => (
-        <div className="bg-white p-4 rounded-2xl">
-            <p className="text-sm text-gray-600">"My goal is to improve overall strength and lose 5kg in the next 3 months."</p>
-        </div>
-    );
-
     const SettingsTab = () => (
         <div className="bg-white p-2 rounded-2xl space-y-1">
             <button onClick={() => setIsQrModalOpen(true)} className="w-full flex items-center gap-4 p-3 rounded-2xl text-left transition-colors hover:bg-gray-100">
@@ -37,7 +31,6 @@ const MemberProfileScreen = () => {
 
     const tabs = [
         { label: 'Personal', content: <PersonalInfoTab /> },
-        { label: 'Goals', content: <GoalsTab /> },
         { label: 'Settings', content: <SettingsTab /> },
     ];
 

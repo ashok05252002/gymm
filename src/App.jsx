@@ -13,12 +13,12 @@ import NotificationsPage from './pages/NotificationsPage';
 import ReceptionistDashboard from './pages/ReceptionistDashboard';
 import EnquiryManagementPage from './pages/EnquiryManagementPage';
 import ReceptionistMemberProfilePage from './pages/ReceptionistMemberProfilePage';
-import PlanSessionManagementPage from './pages/PlanSessionManagementPage';
 import PaymentManagementPage from './pages/PaymentManagementPage';
 import MemberCheckInPage from './pages/MemberCheckInPage';
 import ReceptionistReportsPage from './pages/ReceptionistReportsPage';
 import ReceptionistNotificationsPage from './pages/ReceptionistNotificationsPage';
 import GlobalCalendarPage from './pages/GlobalCalendarPage';
+import RegistrationPage from './pages/RegistrationPage';
 
 // --- Mobile ---
 import TrainerMobileLayout from './mobile/layouts/TrainerMobileLayout';
@@ -83,6 +83,7 @@ function App() {
                          <Route index element={<Navigate to="dashboard" replace />} />
                          <Route path="dashboard" element={<ReceptionistDashboard />} />
                          <Route path="enquiries" element={<EnquiryManagementPage />} />
+                         <Route path="register" element={<RegistrationPage />} />
                          <Route path="members/:memberId" element={<ReceptionistMemberProfilePage />} />
                          <Route path="check-in" element={<MemberCheckInPage />} />
                          <Route path="calendar" element={<GlobalCalendarPage />} />

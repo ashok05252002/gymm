@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const Tabs = ({ tabs }) => {
+const Tabs = ({ tabs, onTabChange }) => {
     const [activeTab, setActiveTab] = useState(0);
+
+    const handleTabClick = (index) => {
+        setActiveTab(index);
+        if (onTabChange) {
+            onTabChange(index);
+        }
+    };
 
     return (
         <div>
@@ -11,7 +18,7 @@ const Tabs = ({ tabs }) => {
                     {tabs.map((tab, index) => (
                         <button
                             key={tab.label}
-                            onClick={() => setActiveTab(index)}
+                            onClick={() => handleTabClick(index)}
                             className={`${
                                 activeTab === index
                                     ? 'border-brand-red text-brand-red'

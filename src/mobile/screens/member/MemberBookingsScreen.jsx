@@ -10,6 +10,16 @@ const sessionStatusColors = {
     Cancelled: 'border-red-500',
 };
 
+const SessionStatusBadge = ({ status }) => {
+    const statusClasses = {
+        Confirmed: 'bg-green-100 text-green-800',
+        Completed: 'bg-gray-100 text-gray-800',
+        Cancelled: 'bg-red-100 text-red-800',
+    };
+    return <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusClasses[status]}`}>{status}</span>;
+};
+
+
 const MemberBookingsScreen = () => {
     const [bookings, setBookings] = useState(getMemberBookings());
     const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
@@ -39,7 +49,7 @@ const MemberBookingsScreen = () => {
                                     <p className="font-bold">{new Date(booking.dateTime).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</p>
                                     <p className="text-sm text-gray-500">{new Date(booking.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} with {booking.trainerName}</p>
                                 </div>
-                                <span className="text-xs font-semibold text-gray-600">{booking.sessionType}</span>
+                                <SessionStatusBadge status={booking.status} />
                             </div>
                             {booking.status === 'Confirmed' && (
                                 <div className="text-right mt-2 flex gap-4 justify-end">

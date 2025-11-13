@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, CreditCard, HardDrive, BarChart2, Bell, HelpCircle, CheckSquare, Calendar, Wallet } from 'lucide-react';
+import { LayoutDashboard, Users, CreditCard, HardDrive, BarChart2, Bell, HelpCircle, CheckSquare, Calendar, Wallet, UserPlus } from 'lucide-react';
 import { getPendingFollowUpCount } from '../data/mockData';
 
 const adminNavItems = [
@@ -16,6 +16,7 @@ const adminNavItems = [
 const receptionistNavItems = [
     { name: 'Dashboard', path: '/receptionist/dashboard', icon: LayoutDashboard },
     { name: 'Enquiries', path: '/receptionist/enquiries', icon: HelpCircle, badge: 'pendingFollowUps' },
+    { name: 'Register', path: '/receptionist/register', icon: UserPlus },
     { name: 'Check-in', path: '/receptionist/check-in', icon: CheckSquare },
     { name: 'Calendar', path: '/receptionist/calendar', icon: Calendar },
     { name: 'Payments', path: '/receptionist/payments', icon: Wallet },

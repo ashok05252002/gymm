@@ -1,19 +1,42 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { getMemberData, getPlans } from '../../../data/mockData';
-import { Info, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { getMemberData, getPlans, getUsers, getMemberBookings } from '../../../data/mockData';
+import { Zap, CalendarPlus, Calendar, Wallet, QrCode } from 'lucide-react';
 import BrowsePlansModal from '../../components/popups/BrowsePlansModal';
+import MemberBookSessionModal from '../../components/popups/MemberBookSessionModal';
+import QrCodeModal from '../../components/popups/QrCodeModal';
 import toast from 'react-hot-toast';
+import UpcomingSessionCard from '../../components/cards/UpcomingSessionCard';
+
+const ShortcutButton = ({ icon: Icon, label, onClick }) => (
+    <button onClick={onClick} className="flex flex-col items-center justify-center gap-2 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-red-50 text-brand-red flex items-center justify-center">
+            <Icon size={24} />
+        </div>
+        <p className="text-xs font-semibold text-gray-700">{label}</p>
+    </button>
+);
 
 const MemberHomeScreen = () => {
-    const { member, activePlan, trainer, kpis } = getMemberData();
-    const [isPlansModalOpen, setIsPlansModalOpen] = useState(false);
+    const { member, activePlan, kpis } = getMemberData();
     const allPlans = getPlans();
+    const trainers = getUsers().filter(u => u.role === 'Trainer');
+    const navigate = useNavigate();
 
-    const handleSelectPlan = (plan) => {
-        console.log("Selected Plan:", plan);
-        toast.success(`Viewing details for ${plan.name} plan.`);
-        // In a real app, this might navigate to a detailed plan page or payment screen
+    const [isPlansModalOpen, setIsPlansModalOpen] = useState(false);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+
+    const bookings = getMemberBookings();
+    const nextSession = bookings
+        .filter(b => b.status === 'Confirmed' && new Date(b.dateTime) > new Date())
+        .sort((a,b) => new Date(a.dateTime) - new Date(b.dateTime))[0];
+
+    const handleSaveBooking = (bookingData) => {
+        console.log("New Member Booking:", bookingData);
+        toast.success("Session booked successfully!");
+        setIsBookingModalOpen(false);
     };
 
     const containerVariants = {
@@ -34,6 +57,22 @@ const MemberHomeScreen = () => {
                 animate="visible"
                 className="space-y-6"
             >
+                {nextSession && (
+                    <motion.div variants={itemVariants}>
+                        <UpcomingSessionCard session={nextSession} />
+                    </motion.div>
+                )}
+
+                <motion.div variants={itemVariants} className="bg-white p-4 rounded-3xl shadow-sm">
+                    <h3 className="font-bold text-gray-800 mb-4 px-2">Quick Shortcuts</h3>
+                    <div className="grid grid-cols-4 gap-2">
+                        <ShortcutButton icon={CalendarPlus} label="Book Session" onClick={() => setIsBookingModalOpen(true)} />
+                        <ShortcutButton icon={Calendar} label="My Bookings" onClick={() => navigate('/mobile/member/bookings')} />
+                        <ShortcutButton icon={Wallet} label="Payments" onClick={() => navigate('/mobile/member/payments')} />
+                        <ShortcutButton icon={QrCode} label="Access QR" onClick={() => setIsQrModalOpen(true)} />
+                    </div>
+                </motion.div>
+
                 <motion.button 
                     variants={itemVariants} 
                     className="w-full bg-white p-5 rounded-3xl shadow-sm text-left"
@@ -80,24 +119,23 @@ const MemberHomeScreen = () => {
                     </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="bg-white p-4 rounded-3xl shadow-sm flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <img src={trainer.avatar} alt={trainer.name} className="w-12 h-12 rounded-full" />
-                        <div>
-                            <p className="text-sm text-gray-500">Your Trainer</p>
-                            <p className="font-bold text-gray-800">{trainer.name}</p>
-                        </div>
-                    </div>
-                    <button className="p-3 bg-red-50 rounded-full text-brand-red">
-                        <Info size={22} />
-                    </button>
-                </motion.div>
             </motion.div>
             <BrowsePlansModal
                 isOpen={isPlansModalOpen}
                 onClose={() => setIsPlansModalOpen(false)}
                 plans={allPlans}
-                onSelectPlan={handleSelectPlan}
+            />
+            <MemberBookSessionModal
+                isOpen={isBookingModalOpen}
+                onClose={() => setIsBookingModalOpen(false)}
+                onSave={handleSaveBooking}
+                trainers={trainers}
+            />
+            <QrCodeModal
+                isOpen={isQrModalOpen}
+                onClose={() => setIsQrModalOpen(false)}
+                title="Your Access QR"
+                value={member.id}
             />
         </>
     );
