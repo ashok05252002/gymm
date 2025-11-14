@@ -31,7 +31,6 @@ const ReportFilterBar = ({ filters, onFilterChange, onGenerate, reportType, trai
         membership_summary: [
             { value: 'Active', label: 'Active' },
             { value: 'Expired', label: 'Expired' },
-            { value: 'Pending Renewal', label: 'Pending Renewal' },
         ]
     };
     
