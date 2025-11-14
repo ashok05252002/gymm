@@ -433,7 +433,7 @@ export const getSessionAttendanceReport = (filters) => {
         if (status === 'Attended') {
             const sessionTime = new Date(s.dateTime);
             sessionTime.setMinutes(sessionTime.getMinutes() - faker.number.int({min: 1, max: 10}));
-            checkInTime = sessionTime.toLocaleTimeString();
+            checkInTime = sessionTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
         }
         return {
             sessionId: s.id.substring(0, 13),
@@ -529,6 +529,7 @@ export const getMembershipSummaryReport = (filters) => {
 export const getPaymentHistoryReport = (filters) => {
     const columns = [
         { key: 'paymentId', label: 'Payment ID' },
+        { key: 'memberId', label: 'Member ID' },
         { key: 'memberName', label: 'Member Name' },
         { key: 'membershipType', label: 'Membership Type' },
         { key: 'amount', label: 'Amount (OMR)' },
@@ -541,6 +542,7 @@ export const getPaymentHistoryReport = (filters) => {
         const plan = faker.helpers.arrayElement(getPlans().filter(p => p.status === 'Active'));
         return {
             id: `PAY-${faker.string.numeric(6)}`,
+            memberId: member.id,
             memberName: member.name,
             planName: plan.name,
             amount: plan.price,
@@ -557,7 +559,7 @@ export const getPaymentHistoryReport = (filters) => {
         if(from) from.setHours(0,0,0,0);
         if(to) to.setHours(23,59,59,999);
 
-        const searchMatch = row.memberName.toLowerCase().includes(searchLower) || row.id.toLowerCase().includes(searchLower);
+        const searchMatch = row.memberName.toLowerCase().includes(searchLower) || row.id.toLowerCase().includes(searchLower) || row.memberId.toLowerCase().includes(searchLower);
         const dateMatch = (!from || date >= from) && (!to || date <= to);
         const typeMatch = filters.membershipType === 'All' || row.planName === filters.membershipType;
 
@@ -570,6 +572,7 @@ export const getPaymentHistoryReport = (filters) => {
         columns,
         rows: filteredRows.map(r => ({
             paymentId: r.id,
+            memberId: r.memberId,
             memberName: r.memberName,
             membershipType: r.planName,
             amount: r.amount.toFixed(3),
