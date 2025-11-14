@@ -1,33 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import ReportFilterBar from '../components/reports/ReportFilterBar';
-import ReportCanvas from '../components/reports/ReportCanvas';
-import { getReportData } from '../data/mockData';
+import Tabs from '../components/shared/Tabs';
+import AttendanceReportTab from '../components/reports/tabs/AttendanceReportTab';
+import SessionAttendanceReportTab from '../components/reports/tabs/SessionAttendanceReportTab';
+import MembershipSummaryReportTab from '../components/reports/tabs/MembershipSummaryReportTab';
+import PaymentHistoryReportTab from '../components/reports/tabs/PaymentHistoryReportTab';
 
 const ReportsPage = () => {
-    const getToday = () => new Date().toISOString().split('T')[0];
-    const getOneMonthAgo = () => {
-        const d = new Date();
-        d.setMonth(d.getMonth() - 1);
-        return d.toISOString().split('T')[0];
-    };
-
-    const [filters, setFilters] = useState({
-        reportType: 'attendance_overview',
-        startDate: getOneMonthAgo(),
-        endDate: getToday(),
-    });
-    
-    // activeReport determines which report is actually displayed
-    const [activeReport, setActiveReport] = useState(null);
-
-    const handleGenerateReport = (newFilters) => {
-        setActiveReport(newFilters);
-    };
-
-    const reportData = useMemo(() => 
-        activeReport ? getReportData(activeReport.reportType, activeReport) : null
-    , [activeReport]);
+    const tabs = [
+        { label: 'Attendance', content: <AttendanceReportTab /> },
+        { label: 'Session Attendance', content: <SessionAttendanceReportTab /> },
+        { label: 'Membership Summary', content: <MembershipSummaryReportTab /> },
+        { label: 'Payment History', content: <PaymentHistoryReportTab /> },
+    ];
 
     return (
         <motion.div
@@ -37,17 +22,10 @@ const ReportsPage = () => {
             className="space-y-6"
         >
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-                <h1 className="text-3xl font-bold font-display text-gray-800">Reports & Analytics</h1>
+                <h1 className="text-3xl font-bold font-display text-gray-800">Reports</h1>
             </div>
             
-            <ReportFilterBar 
-                filters={filters} 
-                onFilterChange={setFilters} 
-                onGenerate={handleGenerateReport} 
-            />
-            
-            <ReportCanvas reportData={reportData} />
-
+            <Tabs tabs={tabs} />
         </motion.div>
     );
 };

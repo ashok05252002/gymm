@@ -180,7 +180,7 @@ export const getReceptionistKpiData = () => ({
     upcomingRenewals: faker.number.int({ min: 5, max: 15 }),
 });
 
-// --- Chart Data ---
+// --- Chart Data (Legacy) ---
 const generateChartLabels = (num) => {
     return Array.from({ length: num }, (_, i) => {
         const d = new Date();
@@ -370,92 +370,212 @@ export const generateNewLogEntry = () => {
 };
 
 // --- Reports & Analytics Data ---
-export const getReportData = (reportType, filters) => {
-    switch (reportType) {
-        case 'attendance_overview':
-            return {
-                title: 'Attendance Overview',
-                description: 'Daily member check-ins over the selected period.',
-                chartOptions: {
-                    ...commonOptions,
-                    xAxis: { ...commonOptions.xAxis, data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], boundaryGap: true },
-                    series: [{
-                        name: 'Check-ins',
-                        type: 'bar',
-                        data: Array.from({ length: 7 }, () => faker.number.int({ min: 80, max: 250 })),
-                        itemStyle: { color: chartColors.attendance, borderRadius: [4, 4, 0, 0] },
-                    }],
-                }
-            };
-        case 'trainer_efficiency':
-            const trainers = getUsers().filter(u => u.role === 'Trainer').slice(0, 5);
-            return {
-                title: 'Trainer Efficiency',
-                description: 'Number of members assigned to each trainer.',
-                chartOptions: {
-                    ...commonOptions,
-                    grid: { ...commonOptions.grid, bottom: 80 },
-                    xAxis: { ...commonOptions.xAxis, data: trainers.map(t => t.name), axisLabel: { ...commonOptions.xAxis.axisLabel, rotate: 30 } },
-                    series: [{
-                        name: 'Assigned Members',
-                        type: 'bar',
-                        data: trainers.map(() => faker.number.int({ min: 5, max: 25 })),
-                        itemStyle: { color: chartColors.trainers, borderRadius: [4, 4, 0, 0] },
-                    }],
-                }
-            };
-        case 'plan_comparisons':
-            const plans = getPlans().filter(p => p.status === 'Active');
-            return {
-                title: 'Plan Comparisons',
-                description: 'Distribution of active members across different plans.',
-                chartOptions: {
-                    tooltip: { trigger: 'item' },
-                    legend: { orient: 'vertical', left: 'left', textStyle: { color: '#333' } },
-                    series: [{
-                        name: 'Member Distribution',
-                        type: 'pie',
-                        radius: '70%',
-                        data: plans.map(p => ({ value: faker.number.int({ min: 50, max: 400 }), name: p.name })),
-                        emphasis: {
-                            itemStyle: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)'
-                            }
-                        },
-                        color: chartColors.plans,
-                    }],
-                    responsive: true,
-                    maintainAspectRatio: false,
-                }
-            };
-        case 'revenue_trend':
-            return {
-                title: 'Revenue Trend by Month',
-                description: 'Monthly revenue generated over the last year.',
-                chartOptions: {
-                    ...commonOptions,
-                    xAxis: { ...commonOptions.xAxis, data: generateChartLabels(12) },
-                    series: [{
-                        name: 'Revenue',
-                        type: 'line',
-                        smooth: true,
-                        data: Array.from({ length: 12 }, () => faker.number.int({ min: 8000, max: 15000 })),
-                        itemStyle: { color: chartColors.revenue },
-                        areaStyle: {
-                            color: {
-                                type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-                                colorStops: [{ offset: 0, color: chartColors.revenue }, { offset: 1, color: 'rgba(255, 59, 48, 0.1)' }]
-                            }
-                        },
-                    }],
-                    yAxis: { ...commonOptions.yAxis, axisLabel: { ...commonOptions.yAxis.axisLabel, formatter: 'OMR {value}' } },
-                }
-            };
-        default:
-            return null;
-    }
+const allAttendanceRecords = Array.from({ length: 100 }, () => {
+    const user = faker.helpers.arrayElement(getUsers());
+    return {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        checkInTime: faker.date.recent({days: 30}),
+        status: faker.helpers.arrayElement(['Present', 'Absent', 'Late']),
+        // Add a mock trainer for members
+        trainer: user.role === 'Member' ? faker.helpers.arrayElement(getUsers().filter(u => u.role === 'Trainer')).name : null,
+    };
+});
+
+export const getAttendanceReport = (filters) => {
+    const columns = [
+        { key: 'id', label: 'ID' },
+        { key: 'name', label: 'Name' },
+        { key: 'role', label: 'Role' },
+        { key: 'checkInTime', label: 'Check-in Time' },
+        { key: 'status', label: 'Status' },
+    ];
+    
+    const filteredRows = allAttendanceRecords.filter(row => {
+        const searchLower = filters.search.toLowerCase();
+        const date = new Date(row.checkInTime);
+        const from = filters.dateFrom ? new Date(filters.dateFrom) : null;
+        const to = filters.dateTo ? new Date(filters.dateTo) : null;
+
+        if(from) from.setHours(0,0,0,0);
+        if(to) to.setHours(23,59,59,999);
+
+        const searchMatch = row.name.toLowerCase().includes(searchLower) || row.id.toLowerCase().includes(searchLower);
+        const dateMatch = (!from || date >= from) && (!to || date <= to);
+        const statusMatch = filters.status.length === 0 || filters.status.includes(row.status);
+        const trainerMatch = filters.trainer.length === 0 || (row.role === 'Member' && filters.trainer.includes(row.trainer));
+        
+        return searchMatch && dateMatch && statusMatch && trainerMatch;
+    });
+
+    return {
+        title: 'Attendance Report',
+        description: 'Attendance records for members and trainers.',
+        columns,
+        rows: filteredRows.map(r => ({...r, checkInTime: r.checkInTime.toLocaleString()}))
+    };
+};
+
+export const getSessionAttendanceReport = (filters) => {
+    const columns = [
+        { key: 'sessionId', label: 'Session ID' },
+        { key: 'trainerName', label: 'Trainer Name' },
+        { key: 'memberName', label: 'Member Name' },
+        { key: 'sessionType', label: 'Session Type' },
+        { key: 'date', label: 'Date' },
+        { key: 'checkInTime', label: 'Check-in Time' },
+        { key: 'status', label: 'Status' },
+    ];
+    const allSessionRecords = getSessions().map(s => {
+        const status = s.status === 'Confirmed' ? 'Attended' : s.status;
+        let checkInTime = 'N/A';
+        if (status === 'Attended') {
+            const sessionTime = new Date(s.dateTime);
+            sessionTime.setMinutes(sessionTime.getMinutes() - faker.number.int({min: 1, max: 10}));
+            checkInTime = sessionTime.toLocaleTimeString();
+        }
+        return {
+            sessionId: s.id.substring(0, 13),
+            trainerName: s.trainerName,
+            memberName: s.memberName,
+            sessionType: s.sessionType,
+            date: new Date(s.dateTime),
+            checkInTime: checkInTime,
+            status: status,
+        };
+    });
+
+    const filteredRows = allSessionRecords.filter(row => {
+        const searchLower = filters.search.toLowerCase();
+        const from = filters.dateFrom ? new Date(filters.dateFrom) : null;
+        const to = filters.dateTo ? new Date(filters.dateTo) : null;
+
+        if(from) from.setHours(0,0,0,0);
+        if(to) to.setHours(23,59,59,999);
+
+        const searchMatch = row.memberName.toLowerCase().includes(searchLower) || row.sessionId.toLowerCase().includes(searchLower);
+        const dateMatch = (!from || row.date >= from) && (!to || row.date <= to);
+        const statusMatch = filters.status.length === 0 || filters.status.includes(row.status);
+        const trainerMatch = filters.trainer.length === 0 || filters.trainer.includes(row.trainerName);
+        const typeMatch = filters.sessionType === 'All' || row.sessionType === filters.sessionType;
+
+        return searchMatch && dateMatch && statusMatch && trainerMatch && typeMatch;
+    });
+
+    return {
+        title: 'Session Attendance Report',
+        description: 'Attendance records for specific training sessions.',
+        columns,
+        rows: filteredRows.map(r => ({...r, date: r.date.toLocaleDateString()}))
+    };
+};
+
+export const getMembershipSummaryReport = (filters) => {
+    const columns = [
+        { key: 'memberId', label: 'Member ID' },
+        { key: 'name', label: 'Name' },
+        { key: 'membershipType', label: 'Membership Type' },
+        { key: 'startDate', label: 'Start Date' },
+        { key: 'endDate', label: 'End Date' },
+        { key: 'renewalDate', label: 'Renewal Date' },
+        { key: 'status', label: 'Status' },
+    ];
+    
+    const allMembershipRecords = getUsers().filter(u => u.role === 'Member').flatMap(user => {
+        // Return all plans for a user, not just the active one
+        return user.planHistory.map(plan => ({
+            memberId: user.id,
+            name: user.name,
+            membershipType: plan.planName,
+            startDate: new Date(plan.startDate),
+            endDate: new Date(plan.endDate),
+            status: plan.status,
+            trainer: faker.helpers.arrayElement(getUsers().filter(u => u.role === 'Trainer')).name, // Mock trainer assignment
+        }));
+    });
+
+    const filteredRows = allMembershipRecords.filter(row => {
+        const searchLower = filters.search.toLowerCase();
+        const from = filters.dateFrom ? new Date(filters.dateFrom) : null;
+        const to = filters.dateTo ? new Date(filters.dateTo) : null;
+
+        if(from) from.setHours(0,0,0,0);
+        if(to) to.setHours(23,59,59,999);
+
+        const searchMatch = row.name.toLowerCase().includes(searchLower) || row.memberId.toLowerCase().includes(searchLower);
+        // Check if the plan's duration overlaps with the selected date range
+        const dateMatch = (!from || row.endDate >= from) && (!to || row.startDate <= to);
+        const statusMatch = filters.status.length === 0 || filters.status.includes(row.status);
+        const trainerMatch = filters.trainer.length === 0 || filters.trainer.includes(row.trainer);
+        const typeMatch = filters.membershipType === 'All' || row.membershipType === filters.membershipType;
+
+        return searchMatch && dateMatch && statusMatch && trainerMatch && typeMatch;
+    });
+
+     return {
+        title: 'Membership Summary Report',
+        description: 'Summary of all member subscriptions.',
+        columns,
+        rows: filteredRows.map(r => ({
+            ...r,
+            startDate: r.startDate ? r.startDate.toLocaleDateString() : 'N/A',
+            endDate: r.endDate ? r.endDate.toLocaleDateString() : 'N/A',
+            renewalDate: r.endDate ? r.endDate.toLocaleDateString() : 'N/A',
+        }))
+    };
+};
+
+export const getPaymentHistoryReport = (filters) => {
+    const columns = [
+        { key: 'paymentId', label: 'Payment ID' },
+        { key: 'memberName', label: 'Member Name' },
+        { key: 'membershipType', label: 'Membership Type' },
+        { key: 'amount', label: 'Amount (OMR)' },
+        { key: 'date', label: 'Date' },
+    ];
+    
+    // Ensure recent payments for default view
+    const allPayments = Array.from({ length: 50 }, () => {
+        const member = faker.helpers.arrayElement(getUsers().filter(u => u.role === 'Member'));
+        const plan = faker.helpers.arrayElement(getPlans().filter(p => p.status === 'Active'));
+        return {
+            id: `PAY-${faker.string.numeric(6)}`,
+            memberName: member.name,
+            planName: plan.name,
+            amount: plan.price,
+            date: faker.date.recent({ days: 28 }),
+        };
+    });
+
+    const filteredRows = allPayments.filter(row => {
+        const searchLower = filters.search.toLowerCase();
+        const date = new Date(row.date);
+        const from = filters.dateFrom ? new Date(filters.dateFrom) : null;
+        const to = filters.dateTo ? new Date(filters.dateTo) : null;
+
+        if(from) from.setHours(0,0,0,0);
+        if(to) to.setHours(23,59,59,999);
+
+        const searchMatch = row.memberName.toLowerCase().includes(searchLower) || row.id.toLowerCase().includes(searchLower);
+        const dateMatch = (!from || date >= from) && (!to || date <= to);
+        const typeMatch = filters.membershipType === 'All' || row.planName === filters.membershipType;
+
+        return searchMatch && dateMatch && typeMatch;
+    });
+
+    return {
+        title: 'Payment History Report',
+        description: 'Record of all financial transactions.',
+        columns,
+        rows: filteredRows.map(r => ({
+            paymentId: r.id,
+            memberName: r.memberName,
+            membershipType: r.planName,
+            amount: r.amount.toFixed(3),
+            date: new Date(r.date).toLocaleDateString(),
+        }))
+    };
 };
 
 // --- Notifications Data ---
@@ -744,7 +864,6 @@ export const getTrainerData = () => {
         kpis: {
             sessionsToday: todaysSessions.length,
             attendance: `${faker.number.int({ min: 85, max: 98 })}%`,
-            monthlyIncome: faker.number.int({ min: 800, max: 1500 }),
         }
     };
 };
