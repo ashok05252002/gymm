@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bell, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const MobileHeader = () => {
     // This is a placeholder. In a real app, you'd get the trainer's name from auth context.
@@ -16,13 +17,13 @@ const MobileHeader = () => {
                     <button className="text-gray-300 hover:text-white p-2">
                         <Search size={22} />
                     </button>
-                    <button className="relative text-gray-300 hover:text-white p-2">
+                    <Link to="/mobile/trainer/notifications" className="relative text-gray-300 hover:text-white p-2">
                         <Bell size={22} />
                         <span className="absolute top-2 right-2 flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-red"></span>
                         </span>
-                    </button>
+                    </Link>
                 </div>
             </div>
         </header>

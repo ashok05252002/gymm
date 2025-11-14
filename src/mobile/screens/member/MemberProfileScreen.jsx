@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Edit, LogOut, QrCode, Phone } from 'lucide-react';
+import { Edit, LogOut, Phone } from 'lucide-react';
 import { getMemberData } from '../../../data/mockData';
 import { useNavigate } from 'react-router-dom';
 import MobileTabs from '../../components/shared/MobileTabs';
-import QrCodeModal from '../../components/popups/QrCodeModal';
 
 const MemberProfileScreen = () => {
     const { member } = getMemberData();
     const navigate = useNavigate();
-    const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
     const PersonalInfoTab = () => (
         <div className="bg-white p-4 rounded-2xl space-y-2 text-sm">
@@ -22,10 +20,7 @@ const MemberProfileScreen = () => {
     
     const SettingsTab = () => (
         <div className="bg-white p-2 rounded-2xl space-y-1">
-            <button onClick={() => setIsQrModalOpen(true)} className="w-full flex items-center gap-4 p-3 rounded-2xl text-left transition-colors hover:bg-gray-100">
-                <QrCode size={22} className="text-gray-700" />
-                <span className="font-semibold text-gray-700">Show Access QR</span>
-            </button>
+            <p className="text-center text-sm text-gray-400 p-4">More settings coming soon.</p>
         </div>
     );
 
@@ -69,12 +64,6 @@ const MemberProfileScreen = () => {
                     </button>
                 </div>
             </motion.div>
-            <QrCodeModal 
-                isOpen={isQrModalOpen}
-                onClose={() => setIsQrModalOpen(false)}
-                title="Your Access QR"
-                value={member.id}
-            />
         </>
     );
 };

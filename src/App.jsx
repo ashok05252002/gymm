@@ -15,7 +15,6 @@ import EnquiryManagementPage from './pages/EnquiryManagementPage';
 import ReceptionistMemberProfilePage from './pages/ReceptionistMemberProfilePage';
 import PaymentManagementPage from './pages/PaymentManagementPage';
 import MemberCheckInPage from './pages/MemberCheckInPage';
-import ReceptionistReportsPage from './pages/ReceptionistReportsPage';
 import ReceptionistNotificationsPage from './pages/ReceptionistNotificationsPage';
 import GlobalCalendarPage from './pages/GlobalCalendarPage';
 import RegistrationPage from './pages/RegistrationPage';
@@ -34,6 +33,7 @@ import MemberHomeScreen from './mobile/screens/member/MemberHomeScreen';
 import MemberBookingsScreen from './mobile/screens/member/MemberBookingsScreen';
 import MemberPaymentsScreen from './mobile/screens/member/MemberPaymentsScreen';
 import MemberProfileScreen from './mobile/screens/member/MemberProfileScreen';
+import NotificationsScreen from './mobile/screens/common/NotificationsScreen';
 
 
 function App() {
@@ -88,7 +88,7 @@ function App() {
                          <Route path="check-in" element={<MemberCheckInPage />} />
                          <Route path="calendar" element={<GlobalCalendarPage />} />
                          <Route path="payments" element={<PaymentManagementPage />} />
-                         <Route path="reports" element={<ReceptionistReportsPage />} />
+                         <Route path="reports" element={<ReportsPage />} />
                          <Route path="notifications" element={<ReceptionistNotificationsPage />} />
                          <Route path="schedule" element={<Navigate to="/receptionist/calendar" replace />} />
                     </Route>
@@ -102,6 +102,7 @@ function App() {
                         <Route path="clients/:memberId" element={<TrainerMemberProfileScreen />} />
                         <Route path="reports" element={<TrainerReportsScreen />} /> 
                         <Route path="profile" element={<TrainerProfileScreen />} />
+                        <Route path="notifications" element={<NotificationsScreen />} />
                     </Route>
 
                     {/* Mobile Member Routes */}
@@ -111,6 +112,7 @@ function App() {
                         <Route path="bookings" element={<MemberBookingsScreen />} />
                         <Route path="payments" element={<MemberPaymentsScreen />} />
                         <Route path="profile" element={<MemberProfileScreen />} />
+                        <Route path="notifications" element={<NotificationsScreen />} />
                     </Route>
                     
                     {/* Fallback Route */}

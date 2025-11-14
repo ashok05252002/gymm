@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Dumbbell, Bell, Search, User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -11,6 +11,8 @@ const Header = ({ userRole }) => {
         // Mock logout
         navigate('/login');
     };
+    
+    const notificationPath = userRole === 'Admin' ? '/admin/notifications' : '/receptionist/notifications';
 
     return (
         <header className="bg-white shadow-sm w-full py-4 px-6 flex items-center justify-between z-10">
@@ -34,13 +36,13 @@ const Header = ({ userRole }) => {
 
             {/* Right Section */}
             <div className="flex items-center gap-4">
-                <button className="relative text-gray-500 hover:text-brand-red transition-colors">
+                <Link to={notificationPath} className="relative text-gray-500 hover:text-brand-red transition-colors">
                     <Bell size={24} />
                     <span className="absolute -top-1 -right-1 flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                     </span>
-                </button>
+                </Link>
 
                 <div className="relative">
                     <button

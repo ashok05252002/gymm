@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { getNotificationHistory, getUsers } from '../data/mockData';
+import { Plus } from 'lucide-react';
+import { getNotificationHistory } from '../data/mockData';
 import NotificationHistory from '../components/notifications/NotificationHistory';
-import NotificationComposer from '../components/notifications/NotificationComposer';
 import ConfirmationDialog from '../components/shared/ConfirmationDialog';
+import AdminSendNotificationModal from '../components/notifications/AdminSendNotificationModal';
 
 const NotificationsPage = () => {
     const [history, setHistory] = useState(getNotificationHistory());
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [notificationToSend, setNotificationToSend] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleSendOrSchedule = (notificationData) => {
         setNotificationToSend(notificationData);
+        setIsModalOpen(false);
         setIsConfirmOpen(true);
     };
 
@@ -30,22 +33,30 @@ const NotificationsPage = () => {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6"
-        >
-            <h1 className="text-3xl font-bold font-display text-gray-800">Notifications</h1>
+        <>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-6"
+            >
+                <div className="flex justify-between items-center">
+                    <h1 className="text-3xl font-bold font-display text-gray-800">Notifications</h1>
+                    <button 
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-brand-red text-white rounded-lg hover:bg-red-600 text-sm font-medium"
+                    >
+                        <Plus size={16} /> Send New Notification
+                    </button>
+                </div>
+                <NotificationHistory notifications={history} />
+            </motion.div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                    <NotificationComposer onSend={handleSendOrSchedule} />
-                </div>
-                <div className="lg:col-span-1">
-                    <NotificationHistory notifications={history} />
-                </div>
-            </div>
+            <AdminSendNotificationModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSend={handleSendOrSchedule}
+            />
 
             <ConfirmationDialog
                 isOpen={isConfirmOpen}
@@ -54,7 +65,7 @@ const NotificationsPage = () => {
                 title={`Confirm ${notificationToSend?.scheduleTime ? 'Scheduling' : 'Send'}`}
                 description={`Are you sure you want to ${notificationToSend?.scheduleTime ? 'schedule' : 'send'} this notification to "${notificationToSend?.targetAudience}"?`}
             />
-        </motion.div>
+        </>
     );
 };
 

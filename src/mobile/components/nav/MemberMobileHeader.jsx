@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bell } from 'lucide-react';
 import { getMemberData } from '../../../data/mockData';
+import { Link } from 'react-router-dom';
 
 const MemberMobileHeader = () => {
     const { member } = getMemberData();
@@ -14,13 +15,13 @@ const MemberMobileHeader = () => {
                     <h1 className="text-xl font-bold font-display">Let's Train Today!</h1>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="relative text-gray-300 hover:text-white p-2">
+                    <Link to="/mobile/member/notifications" className="relative text-gray-300 hover:text-white p-2">
                         <Bell size={22} />
                         <span className="absolute top-2 right-2 flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-red"></span>
                         </span>
-                    </button>
+                    </Link>
                 </div>
             </div>
         </header>
