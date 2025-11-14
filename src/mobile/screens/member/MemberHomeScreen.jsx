@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { getMemberData, getPlans, getUsers, getMemberBookings } from '../../../data/mockData';
-import { Zap, CalendarPlus, Calendar, Wallet, QrCode } from 'lucide-react';
+import { Zap, CalendarPlus, Calendar, Wallet } from 'lucide-react';
 import BrowsePlansModal from '../../components/popups/BrowsePlansModal';
 import MemberBookSessionModal from '../../components/popups/MemberBookSessionModal';
-import QrCodeModal from '../../components/popups/QrCodeModal';
 import toast from 'react-hot-toast';
 import UpcomingSessionCard from '../../components/cards/UpcomingSessionCard';
 
@@ -26,7 +25,6 @@ const MemberHomeScreen = () => {
 
     const [isPlansModalOpen, setIsPlansModalOpen] = useState(false);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
     const bookings = getMemberBookings();
     const nextSession = bookings
@@ -65,11 +63,10 @@ const MemberHomeScreen = () => {
 
                 <motion.div variants={itemVariants} className="bg-white p-4 rounded-3xl shadow-sm">
                     <h3 className="font-bold text-gray-800 mb-4 px-2">Quick Shortcuts</h3>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                         <ShortcutButton icon={CalendarPlus} label="Book Session" onClick={() => setIsBookingModalOpen(true)} />
                         <ShortcutButton icon={Calendar} label="My Bookings" onClick={() => navigate('/mobile/member/bookings')} />
                         <ShortcutButton icon={Wallet} label="Payments" onClick={() => navigate('/mobile/member/payments')} />
-                        <ShortcutButton icon={QrCode} label="Access QR" onClick={() => setIsQrModalOpen(true)} />
                     </div>
                 </motion.div>
 
@@ -130,12 +127,6 @@ const MemberHomeScreen = () => {
                 onClose={() => setIsBookingModalOpen(false)}
                 onSave={handleSaveBooking}
                 trainers={trainers}
-            />
-            <QrCodeModal
-                isOpen={isQrModalOpen}
-                onClose={() => setIsQrModalOpen(false)}
-                title="Your Access QR"
-                value={member.id}
             />
         </>
     );
