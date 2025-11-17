@@ -62,15 +62,17 @@ export const getRoles = () => generatedRoles;
 const createPlanHistory = (isActive = true) => {
     const plans = Array.from({ length: faker.number.int({ min: 1, max: 4 }) }, (_, i) => {
         const startDate = faker.date.past({ years: 2 });
-        // Make the first plan (most recent) active or expired based on param
         const endDate = (i === 0 && isActive) ? faker.date.future({ years: 1 }) : faker.date.past({ years: 1 });
         const status = (i === 0 && isActive) ? 'Active' : 'Expired';
+        const totalSessions = faker.helpers.arrayElement([20, 30, 50]);
 
         return {
             planName: faker.helpers.arrayElement(['Gold', 'Silver', 'Bronze']),
             startDate,
             endDate,
             status,
+            totalSessions,
+            usedSessions: faker.number.int({ min: 5, max: totalSessions }),
         };
     });
     return plans.sort((a, b) => b.startDate - a.startDate);
@@ -79,7 +81,7 @@ const createPlanHistory = (isActive = true) => {
 const createActivityLog = () => {
     return Array.from({ length: faker.number.int({ min: 5, max: 15 }) }, () => ({
         id: faker.string.uuid(),
-        action: faker.helpers.arrayElement(['Checked In', 'Updated Profile', 'Renewed Plan', 'Joined Group Class']),
+        action: faker.helpers.arrayElement(['Checked In', 'Checked In', 'Updated Profile', 'Renewed Plan', 'Joined Group Class']),
         timestamp: faker.date.recent({ days: 30 }),
     })).sort((a,b) => b.timestamp - a.timestamp);
 };
@@ -321,11 +323,11 @@ export const getRecentActivities = () => [
 
 // --- Plan Management Data ---
 const generatedPlans = [
-    { id: 'PLN-001', name: 'Bronze', duration: '30 Days', price: 15.000, accessType: 'Limited', features: 'Gym Access, Locker', status: 'Active' },
-    { id: 'PLN-002', name: 'Silver', duration: '90 Days', price: 40.000, accessType: 'Full Access', features: 'Gym Access, Locker, Group Classes', status: 'Active' },
-    { id: 'PLN-003', name: 'Gold', duration: '180 Days', price: 75.000, accessType: 'Full Access', features: 'All Silver Features, Personal Trainer Session (1/mo)', status: 'Active' },
-    { id: 'PLN-004', name: 'Day Pass', duration: '1 Day', price: 5.000, accessType: 'Session-based', features: 'Gym Access for a day', status: 'Active' },
-    { id: 'PLN-005', name: 'Flexi-5', duration: '60 Days', price: 22.500, accessType: 'Session-based', features: '5 Gym Sessions, Locker', status: 'Inactive' },
+    { id: 'PLN-001', name: 'Bronze', duration: '30 Days', price: 15.000, accessType: 'Limited', features: 'Gym Access, Locker', status: 'Active', totalSessions: 15 },
+    { id: 'PLN-002', name: 'Silver', duration: '90 Days', price: 40.000, accessType: 'Full Access', features: 'Gym Access, Locker, Group Classes', status: 'Active', totalSessions: 50 },
+    { id: 'PLN-003', name: 'Gold', duration: '180 Days', price: 75.000, accessType: 'Full Access', features: 'All Silver Features, Personal Trainer Session (1/mo)', status: 'Active', totalSessions: 100 },
+    { id: 'PLN-004', name: 'Day Pass', duration: '1 Day', price: 5.000, accessType: 'Session-based', features: 'Gym Access for a day', status: 'Active', totalSessions: 1 },
+    { id: 'PLN-005', name: 'Flexi-5', duration: '60 Days', price: 22.500, accessType: 'Session-based', features: '5 Gym Sessions, Locker', status: 'Inactive', totalSessions: 5 },
 ];
 
 export const getPlans = () => generatedPlans;
@@ -963,7 +965,7 @@ export const getMemberData = () => {
         trainer,
         kpis: {
             attendanceProgress: faker.number.int({ min: 60, max: 95 }),
-            sessionsRemaining: faker.number.int({ min: 5, max: 20 }),
+            sessionsRemaining: activePlan.totalSessions - activePlan.usedSessions,
         }
     };
 };

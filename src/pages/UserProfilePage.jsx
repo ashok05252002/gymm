@@ -9,6 +9,7 @@ import ActivityFeed from '../components/users/UserProfile/ActivityFeed';
 import UserAccessLog from '../components/users/UserProfile/UserAccessLog';
 import EditMemberModal from '../components/users/UserProfile/EditMemberModal';
 import toast from 'react-hot-toast';
+import SessionBalanceCard from '../components/users/UserProfile/SessionBalanceCard';
 
 const UserProfilePage = () => {
     const { userId } = useParams();
@@ -51,6 +52,8 @@ const UserProfilePage = () => {
             }
         }
     };
+    
+    const activePlan = user.planHistory?.find(p => p.status === 'Active');
 
     return (
         <>
@@ -76,6 +79,7 @@ const UserProfilePage = () => {
                     animate="visible"
                 >
                     <div className="lg:col-span-2 space-y-6">
+                        {activePlan && <SessionBalanceCard plan={activePlan} />}
                         <PlanHistory planHistory={user.planHistory} />
                         <UserAccessLog userId={user.id} />
                     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, MessageSquare, CheckCircle, FileText, User } from 'lucide-react';
+import { X, FileText, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,8 +15,6 @@ const MemberActionsModal = ({ isOpen, onClose, member }) => {
 
     const actions = [
         { label: 'View Full Profile', icon: User, action: handleViewProfile },
-        { label: 'Send Message', icon: MessageSquare, action: () => toast('Message sent (mock).') },
-        { label: 'Mark Attendance', icon: CheckCircle, action: () => toast.success('Attendance marked.') },
         { label: 'Add Note', icon: FileText, action: () => toast('Note added (mock).') },
     ];
 
