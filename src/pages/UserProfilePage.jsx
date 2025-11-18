@@ -10,6 +10,9 @@ import UserAccessLog from '../components/users/UserProfile/UserAccessLog';
 import EditMemberModal from '../components/users/UserProfile/EditMemberModal';
 import toast from 'react-hot-toast';
 import SessionBalanceCard from '../components/users/UserProfile/SessionBalanceCard';
+import UserFormModal from '../components/users/UserFormModal';
+import TrainerStats from '../components/users/UserProfile/TrainerStats';
+import AssignedClientsList from '../components/users/UserProfile/AssignedClientsList';
 
 const UserProfilePage = () => {
     const { userId } = useParams();
@@ -22,16 +25,12 @@ const UserProfilePage = () => {
     }, [userId]);
 
     const handleEdit = () => {
-        if (user.role !== 'Member') {
-            toast.error("Only member profiles can be edited here.");
-            return;
-        }
         setIsEditModalOpen(true);
     };
 
     const handleSaveChanges = (updatedData) => {
         setUser(prevUser => ({ ...prevUser, ...updatedData }));
-        toast.success("Member details updated successfully.");
+        toast.success("User details updated successfully.");
         setIsEditModalOpen(false);
     };
 
@@ -55,6 +54,31 @@ const UserProfilePage = () => {
     
     const activePlan = user.planHistory?.find(p => p.status === 'Active');
 
+    const renderMemberContent = () => (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                {activePlan && <SessionBalanceCard plan={activePlan} />}
+                <PlanHistory planHistory={user.planHistory} />
+                <UserAccessLog userId={user.id} />
+            </div>
+            <div className="lg:col-span-1">
+                <ActivityFeed activityLog={user.activityLog} />
+            </div>
+        </div>
+    );
+
+    const renderTrainerContent = () => (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                <TrainerStats trainerId={user.id} />
+                <AssignedClientsList trainerId={user.id} />
+            </div>
+            <div className="lg:col-span-1">
+                <ActivityFeed activityLog={user.activityLog} />
+            </div>
+        </div>
+    );
+
     return (
         <>
             <motion.div
@@ -70,31 +94,31 @@ const UserProfilePage = () => {
                     </Link>
                 </div>
                 
-                <ProfileHeader user={user} onEdit={user.role === 'Member' ? handleEdit : null} />
+                <ProfileHeader user={user} onEdit={handleEdit} />
 
                 <motion.div 
-                    className="grid grid-cols-1 lg:grid-cols-3 gap-6"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                 >
-                    <div className="lg:col-span-2 space-y-6">
-                        {activePlan && <SessionBalanceCard plan={activePlan} />}
-                        <PlanHistory planHistory={user.planHistory} />
-                        <UserAccessLog userId={user.id} />
-                    </div>
-                    <div className="lg:col-span-1">
-                        <ActivityFeed activityLog={user.activityLog} />
-                    </div>
+                    {user.role === 'Member' ? renderMemberContent() : renderTrainerContent()}
                 </motion.div>
             </motion.div>
-            {user.role === 'Member' && (
+
+            {user.role === 'Member' ? (
                 <EditMemberModal
                     isOpen={isEditModalOpen}
                     onClose={() => setIsEditModalOpen(false)}
                     onSave={handleSaveChanges}
                     user={user}
                     allPlans={getPlans()}
+                />
+            ) : (
+                <UserFormModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onSave={handleSaveChanges}
+                    user={user}
                 />
             )}
         </>

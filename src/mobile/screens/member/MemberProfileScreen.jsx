@@ -1,69 +1,87 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Edit, LogOut, Phone } from 'lucide-react';
-import { getMemberData } from '../../../data/mockData';
+import { Edit, LogOut } from 'lucide-react';
+import { getMemberData, getMemberBookings } from '../../../data/mockData';
 import { useNavigate } from 'react-router-dom';
-import MobileTabs from '../../components/shared/MobileTabs';
+import EditMemberProfileModal from '../../components/popups/EditMemberProfileModal';
+import toast from 'react-hot-toast';
+import SessionBalanceCardMobile from '../../components/cards/SessionBalanceCardMobile';
+import SessionHistoryCardMobile from '../../components/cards/SessionHistoryCardMobile';
+import PlanHistoryCardMobile from '../../components/cards/PlanHistoryCardMobile';
 
 const MemberProfileScreen = () => {
-    const { member } = getMemberData();
+    const [memberData, setMemberData] = useState(getMemberData());
+    const [bookings] = useState(getMemberBookings());
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const { member, activePlan } = memberData;
     const navigate = useNavigate();
 
-    const PersonalInfoTab = () => (
-        <div className="bg-white p-4 rounded-2xl space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-gray-500">Name:</span> <span className="font-semibold">{member.name}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Email:</span> <span className="font-semibold">{member.email}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Phone:</span> <span className="font-semibold">{member.phone}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Member Since:</span> <span className="font-semibold">{new Date(member.memberSince).toLocaleDateString()}</span></div>
-        </div>
-    );
-    
-    const SettingsTab = () => (
-        <div className="bg-white p-2 rounded-2xl space-y-1">
-            <p className="text-center text-sm text-gray-400 p-4">More settings coming soon.</p>
-        </div>
-    );
+    const handleSaveProfile = (updatedData) => {
+        setMemberData(prev => ({
+            ...prev,
+            member: { ...prev.member, ...updatedData }
+        }));
+        toast.success("Profile updated successfully!");
+        setIsEditModalOpen(false);
+    };
 
-    const tabs = [
-        { label: 'Personal', content: <PersonalInfoTab /> },
-        { label: 'Settings', content: <SettingsTab /> },
-    ];
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: { y: 0, opacity: 1 }
+    };
 
     return (
         <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                <div className="relative">
+            <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-6"
+            >
+                {/* Header */}
+                <motion.div variants={itemVariants} className="relative">
                     <div className="h-24 bg-gray-200 rounded-3xl"></div>
                     <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
                         <img src={member.avatar} alt={member.name} className="w-24 h-24 rounded-full border-4 border-gray-100" />
                     </div>
-                    <button className="absolute top-3 right-3 p-2 bg-white/50 backdrop-blur-sm rounded-full">
+                    <button onClick={() => setIsEditModalOpen(true)} className="absolute top-3 right-3 p-2 bg-white/50 backdrop-blur-sm rounded-full">
                         <Edit size={18} />
                     </button>
-                </div>
+                </motion.div>
 
-                <div className="pt-14 text-center">
+                <motion.div variants={itemVariants} className="pt-14 text-center">
                     <h1 className="text-2xl font-bold">{member.name}</h1>
-                    <p className="text-gray-500">{member.role}</p>
-                </div>
+                    <p className="text-gray-500">{member.email}</p>
+                </motion.div>
 
-                <MobileTabs tabs={tabs} />
+                {/* Session Balance */}
+                {activePlan && <SessionBalanceCardMobile plan={activePlan} />}
 
-                <div className="bg-white p-4 rounded-2xl space-y-1">
-                    <h4 className="font-bold text-gray-800 px-2 pb-1">Gym Contact</h4>
-                    <div className="flex justify-between items-center text-sm p-2">
-                        <span className="text-gray-500 flex items-center gap-2"><Phone size={16}/> Main Office</span>
-                        <span className="font-semibold">+968 9123 4567</span>
-                    </div>
-                </div>
+                {/* Session History */}
+                <SessionHistoryCardMobile sessions={bookings} />
 
-                <div className="pt-4">
+                {/* Past Plans */}
+                <PlanHistoryCardMobile plans={member.planHistory.filter(p => p.status !== 'Active')} />
+
+                {/* Logout Button */}
+                <motion.div variants={itemVariants} className="pt-4">
                     <button onClick={() => navigate('/login')} className="w-full flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 font-bold rounded-2xl">
                         <LogOut size={20} />
                         Logout
                     </button>
-                </div>
+                </motion.div>
             </motion.div>
+            <EditMemberProfileModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSave={handleSaveProfile}
+                user={member}
+            />
         </>
     );
 };

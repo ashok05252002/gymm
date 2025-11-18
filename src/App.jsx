@@ -15,7 +15,6 @@ import EnquiryManagementPage from './pages/EnquiryManagementPage';
 import ReceptionistMemberProfilePage from './pages/ReceptionistMemberProfilePage';
 import PaymentManagementPage from './pages/PaymentManagementPage';
 import MemberCheckInPage from './pages/MemberCheckInPage';
-import ReceptionistNotificationsPage from './pages/ReceptionistNotificationsPage';
 import GlobalCalendarPage from './pages/GlobalCalendarPage';
 import RegistrationPage from './pages/RegistrationPage';
 
@@ -26,7 +25,6 @@ import TrainerScheduleScreen from './mobile/screens/trainer/TrainerScheduleScree
 import TrainerClientsScreen from './mobile/screens/trainer/TrainerClientsScreen';
 import TrainerReportsScreen from './mobile/screens/trainer/TrainerReportsScreen';
 import TrainerProfileScreen from './mobile/screens/trainer/TrainerProfileScreen';
-import TrainerMemberProfileScreen from './mobile/screens/trainer/TrainerMemberProfileScreen';
 
 import MemberMobileLayout from './mobile/layouts/MemberMobileLayout';
 import MemberHomeScreen from './mobile/screens/member/MemberHomeScreen';
@@ -89,7 +87,7 @@ function App() {
                          <Route path="calendar" element={<GlobalCalendarPage />} />
                          <Route path="payments" element={<PaymentManagementPage />} />
                          <Route path="reports" element={<ReportsPage />} />
-                         <Route path="notifications" element={<ReceptionistNotificationsPage />} />
+                         <Route path="notifications" element={<NotificationsPage />} />
                          <Route path="schedule" element={<Navigate to="/receptionist/calendar" replace />} />
                     </Route>
 
@@ -99,7 +97,6 @@ function App() {
                         <Route path="home" element={<TrainerHomeScreen />} />
                         <Route path="schedule" element={<TrainerScheduleScreen />} />
                         <Route path="clients" element={<TrainerClientsScreen />} />
-                        <Route path="clients/:memberId" element={<TrainerMemberProfileScreen />} />
                         <Route path="reports" element={<TrainerReportsScreen />} /> 
                         <Route path="profile" element={<TrainerProfileScreen />} />
                         <Route path="notifications" element={<NotificationsScreen />} />

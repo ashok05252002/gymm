@@ -18,7 +18,7 @@ const ShortcutButton = ({ icon: Icon, label, onClick }) => (
 );
 
 const MemberHomeScreen = () => {
-    const { member, activePlan, kpis } = getMemberData();
+    const { member, activePlan } = getMemberData();
     const allPlans = getPlans();
     const trainers = getUsers().filter(u => u.role === 'Trainer');
     const navigate = useNavigate();
@@ -46,6 +46,8 @@ const MemberHomeScreen = () => {
         hidden: { y: 20, opacity: 0 },
         visible: { y: 0, opacity: 1 }
     };
+    
+    const sessionUsagePercentage = activePlan ? (activePlan.usedSessions / activePlan.totalSessions) * 100 : 0;
 
     return (
         <>
@@ -83,38 +85,19 @@ const MemberHomeScreen = () => {
                         </div>
                         <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Active</span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-2">Expires on: {new Date(activePlan.endDate).toLocaleDateString()}</p>
+                    <div className="mt-4">
+                        <div className="flex justify-between items-baseline mb-1">
+                             <p className="text-sm text-gray-500">Session Balance</p>
+                            <span className="text-sm font-semibold text-brand-dark">{activePlan.usedSessions} / {activePlan.totalSessions} sessions</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div 
+                                className="bg-brand-red h-2.5 rounded-full" 
+                                style={{ width: `${sessionUsagePercentage}%` }}
+                            ></div>
+                        </div>
+                    </div>
                 </motion.button>
-
-                <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
-                    <div className="bg-white p-5 rounded-3xl shadow-sm flex flex-col items-center justify-center">
-                        <div className="relative w-20 h-20">
-                            <svg className="w-full h-full" viewBox="0 0 36 36">
-                                <path
-                                    className="text-gray-200"
-                                    strokeWidth="3" stroke="currentColor" fill="none"
-                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                />
-                                <path
-                                    className="text-brand-green"
-                                    strokeWidth="3" strokeDasharray={`${kpis.attendanceProgress}, 100`} strokeLinecap="round" stroke="currentColor" fill="none"
-                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                />
-                            </svg>
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                                <span className="text-xl font-bold">{kpis.attendanceProgress}%</span>
-                            </div>
-                        </div>
-                         <p className="font-bold text-gray-800 mt-2 text-center">Attendance</p>
-                    </div>
-                     <div className="bg-white p-5 rounded-3xl shadow-sm flex flex-col items-center justify-center">
-                        <div className="w-20 h-20 flex items-center justify-center bg-red-50 rounded-full">
-                            <Zap size={40} className="text-brand-red" />
-                        </div>
-                        <p className="font-bold text-gray-800 mt-2 text-center">Sessions Left</p>
-                        <p className="text-3xl font-bold text-brand-red">{kpis.sessionsRemaining}</p>
-                    </div>
-                </motion.div>
 
             </motion.div>
             <BrowsePlansModal

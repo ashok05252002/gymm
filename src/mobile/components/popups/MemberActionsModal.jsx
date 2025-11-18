@@ -1,20 +1,12 @@
 import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, FileText, User } from 'lucide-react';
+import { X, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 
 const MemberActionsModal = ({ isOpen, onClose, member }) => {
-    const navigate = useNavigate();
     if (!member) return null;
 
-    const handleViewProfile = () => {
-        navigate(`/mobile/trainer/clients/${member.id}`);
-        onClose();
-    };
-
     const actions = [
-        { label: 'View Full Profile', icon: User, action: handleViewProfile },
         { label: 'Add Note', icon: FileText, action: () => toast('Note added (mock).') },
     ];
 
